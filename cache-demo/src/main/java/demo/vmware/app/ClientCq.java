@@ -23,6 +23,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * with any other client side functionality. It is broken out into it's own app here to make it easier to demonstrate
  * and modify.
  * 
+ * Run this after the locator and server processes
+ * 
  */
 public class ClientCq {
 

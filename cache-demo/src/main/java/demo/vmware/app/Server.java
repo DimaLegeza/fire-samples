@@ -21,6 +21,7 @@ import demo.vmware.commands.ICommandProcessor;
 
 /**
  * Startup class that creates a Gemfire data node. It also runs the spring configured command console.
+ * Run this AFTER starting the locator nodes.
  * 
  * You will need to run this with over 1GB of heap, maybe -Xmx1500m if you load the demo data
  */

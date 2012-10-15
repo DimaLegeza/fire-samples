@@ -21,6 +21,7 @@ import demo.vmware.commands.ICommandProcessor;
 
 /**
  * Gemfire caching client startup class. This also spins up a spring configured command console.
+ * Run this after the locator and Server
  * 
  * You will need to run this with over 1GB of heap, maybe -Xmx1500m if you load the demo data *
  */

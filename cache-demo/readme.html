@@ -43,7 +43,7 @@ The following is an incomplete list of demonstrated components.
 Some things that are not yet in the demonstration
 <ul>
 <li><b>WAN Gateway</b> TBA</li>
-<li><b>Write-behind</b> This is built on top of WAN gateway. The demonstration includes logging</li>
+<li><b>Write-behind</b> This is built on top of WAN gateway. The demonstration includes logging mostly because I couldn't use spring batch to do no code writes they way I could do reads</li>
 <li><b>Write-through</b> The demonstration includes logging write-through. It will eventually have fully functional write-through </li>
 <li><b>Partitioned regions</b> This requires that users run at least two nodes to be useful.</li>
 <li><b>Co-located data</b> This is whose node location is picked based on its relationship to other data.  All regions are currently fully replicated without any partioning </li>
@@ -112,12 +112,12 @@ The WAR files are built as part of the standard maven build.
 <li>Connect to H2 on http://localhost:8082 and use the default login and password This can be done from inside Eclipse
 <li>Paste the contents of src/test/resources/sql/create-tables.sql into the H2 command window and execute it. 
 This creates the schema and loads a couple rows of test data. You could add 100s or 1000s of rows in the sql file to increase the DB size
-<li>Start the locator using Locator.java. This can be done from inside Eclipse.
-<li>Start the server using Server.java This can be done from inside Eclipse.
+<li>Start the locator using Locator.java. This can be done from inside Eclipse. 
+<li>Start the server using Server.java as an java application.  This can be done from inside Eclipse.
 <li>You run more than one server. Load will be distributed across them via the locators.
 <li>Verify the size of each cache using the command console.  One of the commands prints the region sizes.
 <li>Request an object in one of the regions by key after looking at the keys currently available in H2. 
-The cache loader will fetch teh one row in.
+The cache loader will fetch one row in.
 <li>Load all of the tables from the database using the command console
 <li>Verify the size of each cache.
 <li>Look at the server logs to see what is going on. Logging levels are set in log4j.properties.

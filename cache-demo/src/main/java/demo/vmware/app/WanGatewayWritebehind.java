@@ -19,6 +19,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Startup class that creates a Gemfire data node. It also runs the spring configured command console.
+ * Run this after the Locator and Server processes are started
  * 
  * You will need to run this with over 1GB of heap, maybe -Xmx1500m if you load the demo data
  */

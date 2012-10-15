@@ -18,7 +18,8 @@ package demo.vmware.app;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * This class starts up a gemfire locator.
+ * This class starts up a gemfire locator. Run this as a java application before starting server instances.
+ * This isn't up until you see the "Started locator" message in the console.
  * 
  * @author joefreeman
  * 

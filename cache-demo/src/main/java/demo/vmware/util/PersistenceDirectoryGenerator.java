@@ -70,7 +70,15 @@ public class PersistenceDirectoryGenerator {
             throw new RuntimeException("Unable to create directory:" + f);
         }
         return f;
-
+    }
+    
+    /**
+     * Starting with Spring-data-gemfire 1.2.0, they couldn't take a File object as a parameter for the disk-dir parameter
+     * @param folder
+     * @return
+     */
+    public String createDirectReturnName(String folder){
+    	return createDirectory(folder).toString();
     }
 
     public synchronized File findDirectory() {

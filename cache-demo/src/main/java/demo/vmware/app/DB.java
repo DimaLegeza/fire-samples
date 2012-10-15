@@ -19,6 +19,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * PoC and teaching aid that starts a demonstration database.
+ * Run this as a java program to start up an H2 instance
  */
 public class DB {
 
