@@ -29,6 +29,7 @@ public class DummyGatewayEventListener implements GatewayEventListener, Declarab
 
     @Override
     public boolean processEvents(List<GatewayEvent> eventList) {
+    	LOG.info("processEvents");
         for (GatewayEvent ge : eventList) {
             LOG.info("Operation = " + ge.getOperation() + " for object (" + ge.getDeserializedValue().getClass()
                     + ") with key '" + ge.getKey() + "'");

@@ -28,7 +28,7 @@ import demo.vmware.commands.ICommandProcessor;
 public class Server {
 
     public static void main(String[] args) throws Exception {
-        String resource[] = { "spring-cache-server.xml", "spring-cache-templates.xml", "spring-command-processor.xml",
+        String resource[] = { "spring-pdx-serializer.xml", "spring-cache-server.xml", "spring-cache-templates.xml", "spring-command-processor.xml",
                 "spring-datasync.xml", };
         ClassPathXmlApplicationContext mainContext = new ClassPathXmlApplicationContext(resource, false);
         mainContext.setValidating(true);

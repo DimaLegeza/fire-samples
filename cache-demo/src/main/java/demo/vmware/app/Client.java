@@ -28,7 +28,7 @@ import demo.vmware.commands.ICommandProcessor;
 public class Client {
 
     public static void main(String[] args) throws Exception {
-        String resource[] = { "spring-cache-client-core.xml", "spring-cache-client-region-only.xml",
+        String resource[] = { "spring-pdx-serializer.xml", "spring-cache-client-core.xml", "spring-cache-client-region-only.xml",
                 "spring-cache-templates.xml", "spring-command-processor.xml", "spring-datasync.xml", };
         ClassPathXmlApplicationContext mainContext = new ClassPathXmlApplicationContext(resource, false);
         mainContext.setValidating(true);

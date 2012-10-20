@@ -35,11 +35,11 @@ public class CommandAddNote implements ICommand {
     public CommandResult run(ConfigurableApplicationContext mainContext, List<String> parameters) {
         Cache cache = (Cache) mainContext.getBean("cache");
         // We put the key in the model object and use as key to the region
-        Region<String, SampleNote> region = cache.getRegion("NOTES-EXT-CONFIG");
+        Region<String, SampleNote> region = cache.getRegion("NOTES-REGION-WITH-GATEWAY");
         // pick some random key that is unlikely to be duplicated -- in really world we'd use GUID generator
         String key = new java.util.Date().toString();
         SampleNote note = new SampleNote(key, parameters.get(0));
         region.put(key, note);
-        return new CommandResult(key, "Note saved");
+        return new CommandResult(key, "Note saved with key '"+key+"'");
     }
 }

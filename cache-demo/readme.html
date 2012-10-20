@@ -25,24 +25,25 @@ This is a very basic demo of some of VMWare's Gemfire product.
 It is demonstrable as both standalone components and as deployable war files.  
 The following is an incomplete list of demonstrated components.
 <ul>
-<li><b>Cache nodes</b> A standalone data server or clustered server that includes listeners and continuous queries </li>
-<li><b>Replicated regions</b> Gemfire regions where the data is replicated across all nodes</li>
-<li><b>Cache client</b> A standalone client program that has local cache</li>
+<li><b>Locator</b> A locator process that shows how the ports are selected</li>
+<li><b>Server Cache nodes</b> A standalone data server or clustered server that includes listeners and continuous queries </li>
+<li><b>Cache Client</b> A standalone client program that has local cache</li>
 <li><b>Continuous Query Clients</b> A standalone client program that receives call backs when data changes in certain regions</li>
+<li><b>WAN Gatway</b>A cluster node that could be used to replicate data to another site. It currently logs batch data inserts and updates as they become available from the cluster nodes.</li>
 <li><b>Cache Listener</b> A component that runs in the server that logs listener events</li>
 <li><b>Cache Loader</b> Two examples, one that just logs when there is a cache miss and the other that is configured to load cache misses form the demo H2 database.</li>
 <li><b>Cache Writer (write-through)</b> Two examples, one that just logs when data changes in the cache and can be written some backend system. The other is configured to write to a DB when data is saved.</li>
-<li><b>Locator</b> A locator process that shows how the ports are selected</li>
+<li><b>Replicated regions</b> Gemfire regions where the data is replicated across all nodes</li>
 <li><b>JmxAgent</b> A JMXAgent wrapper that lets it be run in the same way as the other components.</li>
 <li><b>Disk write-through persistence(?)</b> this may belong in a different section</li>
-<li><b>Disk write-behind</b> hooks demonstrated via WAN gateway</li>
+<li><b>Disk write-behind</b> hooks demonstrated via WAN gateway and a wan gateway listener</li>
 <li><b>The @cacheable annotation</b> One of the commands and regions is dedicated the @cacheable annotation. See the "power" command</li>
 <li><b></b> </li>
 </ul>
 <p>
 Some things that are not yet in the demonstration
 <ul>
-<li><b>WAN Gateway</b> TBA</li>
+<li><b>WAN Gateway</b> Basic Spring-Data-Gemfire configuration for a WAN gateway that is used, in this case, to log activity.</li>
 <li><b>Write-behind</b> This is built on top of WAN gateway. The demonstration includes logging mostly because I couldn't use spring batch to do no code writes they way I could do reads</li>
 <li><b>Write-through</b> The demonstration includes logging write-through. It will eventually have fully functional write-through </li>
 <li><b>Partitioned regions</b> This requires that users run at least two nodes to be useful.</li>
@@ -60,8 +61,10 @@ The idea here is that we wanted a simple way to muck around with Gemfire feature
 This list in this document may not always be up to date.  See the menu in the individual programs for the current list of available commands.
 That command line lets you do the following functions:  
 <ul>
-<li>Save a note to the notes table.  Saves a command line note to the NOTES-EXT-CONFIG table which is hooked to an asynchronous listener via the WAN gateway<br>Usage: &lt;cmd&gt; &lt;double quoted message&gt;
-<li>Generate 2^n as a demo of @Cacheable.  Calculates 2^n and caches. Uses the cache version if you repeat the same number more than once.
+<li>Save a note to the notes table.  Saves a command line entered note to the NOTES-REGION-WITH-GATEWAY table which is hooked to an asynchronous listener via the WAN gateway. <br>Usage: &lt;cmd&gt; &lt;double quoted message&gt;
+<li>Generate 2^n as a demo of @Cacheable.  Calls a method that calculates 2^n and caches or uses a previously calculated value. 
+    That method is marked with the @Cacheable annotation.
+    Uses the cache version if you repeat the same number more than once.
     Cache entries expire 15 seconds after creation.  <br>Usage: &lt;cmd&gt; &lt;n&gt;
 <li>Return Cache sizes for all regions. Clients with local caches return the local cache size   <br>Usage: &lt;cmd&gt;
 <li>Create random data and stuff into Gemfire Cluster. This creates 400,000 rows in all tables    <br>Usage: &lt;cmd&gt;
@@ -77,9 +80,9 @@ That command line lets you do the following functions:
 <li>Purge all data from cache: WARNING!    <br>Usage: &lt;cmd&gt;
 <li>Exit this program without hesitation. Terminates command line programs   <br> Usage: &lt;cmd&gt;
 </ul>
-<h2>Components</h2>
+<h2>Executables</h2>
 <p>
-The system is broken up into several components that exist as main() programs that can be run from inside Eclipse with <i>RunAs-->JavaApplication</i>.  
+The system is broken up into several executables that exist as main() programs that can be run from inside Eclipse with <i>RunAs-->JavaApplication</i>.  
 Some of these can be run as standalone java programs with their own bootstrap. The java application class files containing the main() entry point 
 exist in demo.vmware.app to make it easier to explore.
 These programs are all in the src/main/java/demo/vmware/app folder.
@@ -98,16 +101,17 @@ Clients should be launched after all the server and services components have bee
 Clients should be launched after all the server and services components have been started.
 <li><b>WanGatewayWritebehind.java</b> This runs a WAN gateway process that records all data that would either be written to a database
 as database write-behind or data that would be replicated across the WAN gateway to another data center.  
-Only the NOTES-EXT-CONFIG region is currently configured for this so you must use the "add a note" command in a server or client to insert data that is sent to this process.
+Only the NOTES-REGION-WITH-GATEWAY region is currently configured for this so you must use the "add a note" command in a server or client to insert data that is sent to this process.
 </ul> 
 
 Server, Client, Locator and JmxAgent can also be run inside container using the separate war files defined in src/main/resources. 
 The WAR files are built as part of the standard maven build.
 
-<H2>Execution Sequence</H2>
+<H1>Quick-Start Build & Demo</H1>
 
 <ol>
-<li>Run <i>mvn clean install</i> to pull down all the dependencies and to build the class files and war packages
+<li>Download the code from github</li>
+<li>Run <i>mvn clean install</i> to pull down all the dependencies and to build the class files and war packages.  You will not be deploying the war packages as part of this quick-start.
 <li>Start the H2 database using DB.java.  This is optional if you disable or remove the database connected cache loaders.
 <li>Connect to H2 on http://localhost:8082 and use the default login and password This can be done from inside Eclipse
 <li>Paste the contents of src/test/resources/sql/create-tables.sql into the H2 command window and execute it. 
@@ -179,13 +183,13 @@ The gemfire regions exist to demonstrate a couple different ideas and capabiliti
     This region is hooked configured in the WAN gateway so that any notes saved to it are asynchronously logged.  
     This shows where database persistense code would go if you wanted to do database write-behind.  The timeouts
     and batch sizes for the WAN gateway are configured in their XML file.
-    <li>NOTES-EXT-CONFIG</li>
+    <li>NOTES-REGION-WITH-GATEWAY</li>
     </ul>
 </li>
 <li>Regions for future demonstrations.
     <ul>
     Other regions exist in the config to show alternate cache configurations including disk-persistent or partitioned regions.
-    <li>NOTES</li>
+    <li>NOTES-ON-DISK</li>
     </ul>
 </li>  
 </ul>

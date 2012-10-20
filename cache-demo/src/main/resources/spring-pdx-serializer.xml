@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:gfe="http://www.springframework.org/schema/gemfire"
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:util="http://www.springframework.org/schema/util" 
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:cache="http://www.springframework.org/schema/cache" 
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
+        http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire-1.1.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+
+    <bean id="cacheSerializer" class="com.gemstone.gemfire.pdx.ReflectionBasedAutoSerializer">
+        <constructor-arg ref="serializedClasses"></constructor-arg>
+    </bean>
+    
+    <util:list id="serializedClasses" list-class="java.util.ArrayList" value-type="java.lang.String">
+        <value>demo\.vmware\.domain\..*</value>
+    </util:list>
+</beans>
+    

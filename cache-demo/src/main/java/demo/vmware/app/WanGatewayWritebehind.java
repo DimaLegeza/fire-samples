@@ -26,7 +26,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class WanGatewayWritebehind {
 
     public static void main(String[] args) throws Exception {
-        String resource[] = { "spring-cache-gateway-writebehind.xml" };
+        String resource[] = { "spring-pdx-serializer.xml", "spring-cache-gateway-writebehind.xml" };
         ClassPathXmlApplicationContext mainContext = new ClassPathXmlApplicationContext(resource, false);
         mainContext.setValidating(true);
         mainContext.refresh();

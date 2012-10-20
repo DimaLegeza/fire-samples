@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-        xmlns:gfe="http://www.springframework.org/schema/gemfire"
-        xmlns:context="http://www.springframework.org/schema/context" 
-        xmlns:util="http://www.springframework.org/schema/util" 
-        xmlns:p="http://www.springframework.org/schema/p"
-        xmlns:cache="http://www.springframework.org/schema/cache" 
-        xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:gfe="http://www.springframework.org/schema/gemfire"
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:util="http://www.springframework.org/schema/util" 
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:cache="http://www.springframework.org/schema/cache" 
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
     xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
-        http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire-1.1.xsd
+        http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
-        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"
-    >
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
     <!-- Generic properties that we can set, such as where to store data and log files -->
     <context:property-placeholder system-properties-mode="OVERRIDE" location="classpath:/common.properties" />
-    
+
     <!-- gemfire.properties file for the cache server -->
     <bean id="props" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="locations">
@@ -35,8 +34,8 @@
         </property>
     </bean>
 
-    <!--  we could refacter spring-cache-server.xml to pull out the re-used components and import that xml here -->
-    
+    <!-- we could refacter spring-cache-server.xml to pull out the re-used components and import that xml here -->
+
     <!-- when we run multiple cache servers on the same node, we need unique server ports -->
     <bean id="portGenerator" class="demo.vmware.util.ServerPortGenerator" />
 
@@ -45,11 +44,37 @@
         <property name="parent" value="${data.location}" />
     </bean>
 
-    <!-- gemfire base cache configuration loads part of the config from the standard gemfire (6.6) style xml -->
-    <gfe:cache id="cache" properties-ref="props" cache-xml-location="classpath:cache-gateway-writebehind.xml" />
+    <!-- gemfire based cache configuration loads part of the config from the standard gemfire (6.6) style xml -->
+    <gfe:cache id="cache" properties-ref="props" 
+        pdx-read-serialized="true" pdx-serializer-ref="cacheSerializer" 
+        />
+
+
+
+    <!-- Sets up a non-retaining wan gateway for the purposes of hooking up a write-behind listener -->
+    <!-- DummyGatewayEventListener that performs (fake) write-behind work -->
+    <!-- a single hub can work for many regions -->
+    <gfe:gateway-hub id="notes-gateway-hub" cache-ref="cache">
+        <gfe:gateway gateway-id="basic-listener-gateway">
+            <gfe:gateway-listener>
+                <bean class="demo.vmware.datasync.DummyGatewayEventListener"></bean>
+            </gfe:gateway-listener>
+            <!-- 10 seconds limit that can elapse between sending batches of up to 1000 -->
+            <gfe:gateway-queue batch-size="1000" batch-time-interval="10000" />
+        </gfe:gateway>
+    </gfe:gateway-hub>
+
+    <!-- this markup was on the region when it was in the cache config file but I can't figure out where to put it now <subscription-attributes 
+        interest-policy="all"/> -->
+    <!-- create a replicated region which as an enabled gateway "name" is the region name -->
+    <gfe:replicated-region id="NOTES-REGION-IN-DB" name="NOTES-REGION-WITH-GATEWAY" cache-ref="cache"
+        hub-id="notes-gateway-hub" enable-gateway="true" scope="distributed-ack" >
+    </gfe:replicated-region>
+        <!-- data-policy="empty" requires "subscription-attributes interest-policy" which isn't available in spring-data-gemfire 1.2 -->
+
 
     <!-- this makes the cache server be a 'server' in the grid -->
     <gfe:cache-server id="advanced-config" auto-startup="true" cache-ref="cache" port="#{portGenerator.generatePort()}" />
-     
-    
+
+
 </beans>
